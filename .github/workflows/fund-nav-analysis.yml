@@ -1,0 +1,44 @@
+name: 基金净值分析
+
+on:
+  # 手动触发
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: "触发原因（可选）"
+        required: false
+        type: string
+        default: "Github Actions 页面手动触发"
+
+  # 定时触发：每周一到周五下午两点（北京时间）
+  # 北京时间 14:00 = UTC 6:00
+  schedule:
+    - cron: "30 5 * * 1-5" # UTC 00:00，对应北京时间 08:00，每月1日
+
+env:
+  WORKFLOW_NAME: ${{ github.workflow }}
+  RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+  LARK_CHAT_ID: ${{ secrets.LARK_TEST_CHAT_ID }}
+  LARK_APP_ID: ${{ secrets.LARK_APP_ID }}
+  LARK_APP_SECRET: ${{ secrets.LARK_APP_SECRET }}
+
+jobs:
+  sync:
+    name: 同步基金净值分析
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v6
+
+      - name: 安装 Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: 安装依赖
+        run: bun install --frozen-lockfile
+
+      - name: 运行同步任务
+        working-directory: src/modules/fund-nav-analysis
+        run: bun run index.ts
