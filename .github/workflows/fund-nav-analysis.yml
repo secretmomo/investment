@@ -8,12 +8,7 @@ on:
         description: "触发原因（可选）"
         required: false
         type: string
-        default: "Github Actions 页面手动触发"
-
-  # 定时触发：每周一到周五下午两点（北京时间）
-  # 北京时间 14:00 = UTC 6:00
-  schedule:
-    - cron: "30 5 * * 1-5" # UTC 00:00，对应北京时间 08:00，每月1日
+        default: "Github Actions 页面手动触发" # UTC 00:00，对应北京时间 08:00，每月1日
 
 env:
   WORKFLOW_NAME: ${{ github.workflow }}
@@ -28,17 +23,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 检出代码
+      - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: 安装 Bun
+      - name: Install Bun
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
 
-      - name: 安装依赖
+      - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: 运行同步任务
+      - name: 同步基金净值分析
         working-directory: src/modules/fund-nav-analysis
         run: bun run index.ts
