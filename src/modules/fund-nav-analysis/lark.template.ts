@@ -1,4 +1,4 @@
-import { dateTimeToNow } from "@/utils/date-time";
+import { dateToNow, dateTimeToNow } from "@/utils/date-time";
 import type { AnalyzeFundNavResult } from "./types";
 import { f2 } from "@/utils/num";
 
@@ -25,6 +25,7 @@ export function buildFundNavAnalysisCardMessage(fundNavAnalysis: AnalyzeFundNavR
     fundCode,
     fundName,
     fundHomePageUrl,
+    todayEstimatedChange,
     lastNav,
     lastNavDate,
     lastNavChange,
@@ -37,6 +38,7 @@ export function buildFundNavAnalysisCardMessage(fundNavAnalysis: AnalyzeFundNavR
     lastMonthNavList,
   } = fundNavAnalysis;
   const color = lastNavChange > 0 ? "red" : lastNavChange < 0 ? "green" : "grey";
+  const etfColor = todayEstimatedChange > 0 ? "red" : todayEstimatedChange < 0 ? "green" : "grey";
   const values = lastMonthNavList
     .map((d) => {
       return { date: d.date.substring(5), value: d.value }; //Math.round(d.value * 10000)
@@ -88,6 +90,37 @@ export function buildFundNavAnalysisCardMessage(fundNavAnalysis: AnalyzeFundNavR
                 {
                   tag: "markdown",
                   content: `<font color='grey'>${lastNavDate}</font>`,
+                  text_align: "center",
+                  text_size: "normal",
+                },
+              ],
+              padding: "12px 12px 12px 12px",
+              direction: "vertical",
+              horizontal_spacing: "8px",
+              vertical_spacing: "2px",
+              horizontal_align: "left",
+              vertical_align: "top",
+              weight: 1,
+            },
+            {
+              tag: "column",
+              width: "weighted",
+              background_style: `${etfColor}-50`,
+              elements: [
+                {
+                  tag: "markdown",
+                  content: `**<font color='grey'>预估涨幅</font>**`,
+                  text_size: "normal",
+                  text_align: "center",
+                },
+                {
+                  tag: "markdown",
+                  content: `## <font color='${etfColor}'>${todayEstimatedChange}%</font>`,
+                  text_align: "center",
+                },
+                {
+                  tag: "markdown",
+                  content: `<font color='grey'>${dateToNow()}</font>`,
                   text_align: "center",
                   text_size: "normal",
                 },

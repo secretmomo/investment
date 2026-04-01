@@ -5,7 +5,7 @@ import { Xueqiu } from "./xueqiu";
 async function main() {
   try {
     const xueqiu = new Xueqiu();
-    const data = await xueqiu.analyzeFundNav("008163");
+    const data = await xueqiu.analyzeFundNav("008163", "SH515450");
 
     await sendCardMessage(buildFundNavAnalysisCardMessage(data));
   } catch (e) {

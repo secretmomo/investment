@@ -15,6 +15,9 @@ export interface AnalyzeFundNavResult {
   /** 基金首页链接 */
   fundHomePageUrl: string;
 
+  /** 今日预估涨幅 */
+  todayEstimatedChange: number;
+
   /** 最近一天的净值 */
   lastNav: number;
 
