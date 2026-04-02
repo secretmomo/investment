@@ -7,6 +7,7 @@ export class Xueqiu {
       fundCode,
       fundName: "",
       fundHomePageUrl: `https://danjuanfunds.com/funding/${fundCode}`,
+      etfHomePageUrl: `https://xueqiu.com/S/${etfCode}`,
       todayEstimatedChange: 0,
       lastNav: 0,
       lastNavDate: "",

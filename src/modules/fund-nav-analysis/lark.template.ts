@@ -25,6 +25,7 @@ export function buildFundNavAnalysisCardMessage(fundNavAnalysis: AnalyzeFundNavR
     fundCode,
     fundName,
     fundHomePageUrl,
+    etfHomePageUrl,
     todayEstimatedChange,
     lastNav,
     lastNavDate,
@@ -69,12 +70,12 @@ export function buildFundNavAnalysisCardMessage(fundNavAnalysis: AnalyzeFundNavR
           flex_mode: "stretch",
           horizontal_spacing: "12px",
           horizontal_align: "left",
-          action: { multi_url: { url: fundHomePageUrl } },
           columns: [
             {
               tag: "column",
               width: "weighted",
               background_style: `${color}-50`,
+              action: { multi_url: { url: fundHomePageUrl } },
               elements: [
                 {
                   tag: "markdown",
@@ -106,6 +107,7 @@ export function buildFundNavAnalysisCardMessage(fundNavAnalysis: AnalyzeFundNavR
               tag: "column",
               width: "weighted",
               background_style: `${etfColor}-50`,
+              action: { multi_url: { url: etfHomePageUrl } },
               elements: [
                 {
                   tag: "markdown",
@@ -137,14 +139,8 @@ export function buildFundNavAnalysisCardMessage(fundNavAnalysis: AnalyzeFundNavR
         },
         {
           tag: "markdown",
-          content: `近一年百分位：**${f2(lastNavPercentileInLastYear * 100)}%**\n历史百分位：**${f2(lastNavPercentileInHistory * 100)}%**\n历史最低净值（${lowestNavInHistoryDate}）：**${lowestNavInHistory}**\n历史最高净值（${highestNavInHistoryDate}）：**${highestNavInHistory}**`,
+          content: `> 近一年：**${f2(lastNavPercentileInLastYear * 100)}%**，成立以来：**${f2(lastNavPercentileInHistory * 100)}%**，[任务地址](${process.env.RUN_URL})。`,
           text_size: "normal",
-          margin: "0px 0px 0px 0px",
-        },
-        {
-          tag: "markdown",
-          content: `> ${dateTimeToNow()} [任务地址](${process.env.RUN_URL})。`,
-          text_size: "notation",
           margin: "0px 0px 0px 0px",
         },
         {
@@ -180,6 +176,25 @@ export function buildFundNavAnalysisCardMessage(fundNavAnalysis: AnalyzeFundNavR
           aspect_ratio: "2:1",
           height: "auto",
           margin: "0px 0px 0px 0px",
+        },
+        {
+          tag: "hr",
+          margin: "0px 0px 0px 0px",
+        },
+        {
+          tag: "div",
+          icon: {
+            tag: "standard_icon",
+            token: "info_outlined",
+            color: "light_grey",
+          },
+          text: {
+            tag: "plain_text",
+            content: `最低 ${lowestNavInHistoryDate} ${lowestNavInHistory} ，最高 ${highestNavInHistoryDate} ${highestNavInHistory}。`,
+            text_size: "notation",
+            text_align: "left",
+            text_color: "grey",
+          },
         },
       ],
     },
