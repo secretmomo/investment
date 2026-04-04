@@ -21,6 +21,9 @@ export interface AnalyzeFundNavResult {
   /** 今日预估涨幅 */
   todayEstimatedChange: number;
 
+  /** 今日预估净值日期 */
+  todayEstimatedDate: string;
+
   /** 最近一天的净值 */
   lastNav: number;
 

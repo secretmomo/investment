@@ -1,6 +1,5 @@
-import { dateToNow, dateTimeToNow } from "@/utils/date-time";
 import type { AnalyzeFundNavResult } from "./types";
-import { f2 } from "@/utils/num";
+import { f2, f4 } from "@/utils/num";
 
 function findMinMax(values: number[]): { min: number; max: number } {
   const result = { min: values[0]!, max: values[0]! };
@@ -27,6 +26,7 @@ export function buildFundNavAnalysisCardMessage(fundNavAnalysis: AnalyzeFundNavR
     fundHomePageUrl,
     etfHomePageUrl,
     todayEstimatedChange,
+    todayEstimatedDate,
     lastNav,
     lastNavDate,
     lastNavChange,
@@ -40,17 +40,19 @@ export function buildFundNavAnalysisCardMessage(fundNavAnalysis: AnalyzeFundNavR
   } = fundNavAnalysis;
   const color = lastNavChange > 0 ? "red" : lastNavChange < 0 ? "green" : "grey";
   const etfColor = todayEstimatedChange > 0 ? "red" : todayEstimatedChange < 0 ? "green" : "grey";
+  const estimatedNav = f4(lastNav * (1 + todayEstimatedChange / 100));
   const values = lastMonthNavList
     .map((d) => {
       return { date: d.date.substring(5), value: d.value }; //Math.round(d.value * 10000)
     })
     .reverse();
   const { min, max } = findMinMax(values.map((d) => d.value));
+  const isSameDay = lastNavDate === todayEstimatedDate;
   const card = {
     schema: "2.0",
     config: { update_multi: true },
     header: {
-      template: color,
+      template: "blue",
       padding: "12px 8px 12px 8px",
       icon: { tag: "standard_icon", token: "sheet-line_outlined" },
       title: {
@@ -103,38 +105,40 @@ export function buildFundNavAnalysisCardMessage(fundNavAnalysis: AnalyzeFundNavR
               vertical_align: "top",
               weight: 1,
             },
-            {
-              tag: "column",
-              width: "weighted",
-              background_style: `${etfColor}-50`,
-              action: { multi_url: { url: etfHomePageUrl } },
-              elements: [
-                {
-                  tag: "markdown",
-                  content: `**<font color='grey'>预估涨幅</font>**`,
-                  text_size: "normal",
-                  text_align: "center",
+            isSameDay
+              ? null
+              : {
+                  tag: "column",
+                  width: "weighted",
+                  background_style: `${etfColor}-50`,
+                  action: { multi_url: { url: etfHomePageUrl } },
+                  elements: [
+                    {
+                      tag: "markdown",
+                      content: `**<font color='grey'>预估净值</font> <text_tag color='${etfColor}'>${todayEstimatedChange}%</text_tag>**`,
+                      text_size: "normal",
+                      text_align: "center",
+                    },
+                    {
+                      tag: "markdown",
+                      content: `## <font color='gray'>${estimatedNav}</font>`,
+                      text_align: "center",
+                    },
+                    {
+                      tag: "markdown",
+                      content: `<font color='grey'>${todayEstimatedDate}</font>`,
+                      text_align: "center",
+                      text_size: "normal",
+                    },
+                  ],
+                  padding: "12px 12px 12px 12px",
+                  direction: "vertical",
+                  horizontal_spacing: "8px",
+                  vertical_spacing: "2px",
+                  horizontal_align: "left",
+                  vertical_align: "top",
+                  weight: 1,
                 },
-                {
-                  tag: "markdown",
-                  content: `## <font color='${etfColor}'>${todayEstimatedChange}%</font>`,
-                  text_align: "center",
-                },
-                {
-                  tag: "markdown",
-                  content: `<font color='grey'>${dateToNow()}</font>`,
-                  text_align: "center",
-                  text_size: "normal",
-                },
-              ],
-              padding: "12px 12px 12px 12px",
-              direction: "vertical",
-              horizontal_spacing: "8px",
-              vertical_spacing: "2px",
-              horizontal_align: "left",
-              vertical_align: "top",
-              weight: 1,
-            },
           ],
         },
         {

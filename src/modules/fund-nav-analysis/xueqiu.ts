@@ -1,5 +1,6 @@
 import type { AnalyzeFundNavResult, FundNavData } from "./types";
 import { f4 } from "@/utils/num";
+import { timestampToDate } from "@/utils/date-time";
 
 export class Xueqiu {
   async analyzeFundNav(fundCode: string, etfCode: string): Promise<AnalyzeFundNavResult> {
@@ -9,6 +10,7 @@ export class Xueqiu {
       fundHomePageUrl: `https://danjuanfunds.com/funding/${fundCode}`,
       etfHomePageUrl: `https://xueqiu.com/S/${etfCode}`,
       todayEstimatedChange: 0,
+      todayEstimatedDate: "",
       lastNav: 0,
       lastNavDate: "",
       lastNavChange: 0,
@@ -21,11 +23,13 @@ export class Xueqiu {
       lastMonthNavList: [],
     };
     const fundNavList = await this.fetchFundNavList(fundCode);
+    const estimatedNavData = await this.fetchTodayEstimatedChange(etfCode);
     const lowestNavInHistory = this.findLowestNavInHistory(fundNavList);
     const highestNavInHistory = this.findHighestNavInHistory(fundNavList);
 
     result.fundName = await this.fetchFundName(fundCode);
-    result.todayEstimatedChange = await this.fetchTodayEstimatedChange(etfCode);
+    result.todayEstimatedChange = estimatedNavData.percent ?? 0;
+    result.todayEstimatedDate = timestampToDate(estimatedNavData.timestamp);
     result.lastNav = fundNavList[0]!.value;
     result.lastNavDate = fundNavList[0]!.date;
     result.lastNavChange = fundNavList[0]!.percentage;
@@ -75,12 +79,12 @@ export class Xueqiu {
     }));
   }
 
-  private async fetchTodayEstimatedChange(etfCode: string): Promise<number> {
+  private async fetchTodayEstimatedChange(etfCode: string): Promise<any> {
     const url = `https://stock.xueqiu.com/v5/stock/realtime/quotec.json?symbol=${etfCode}&_=${Date.now()}`;
     const response = await fetch(url);
     const { data } = (await response.json()) as any;
 
-    return data[0]?.percent ?? 0;
+    return data[0];
   }
 
   private findLowestNavInHistory(fundNavList: FundNavData[]): FundNavData {
